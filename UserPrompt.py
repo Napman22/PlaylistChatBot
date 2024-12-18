@@ -1,4 +1,4 @@
-4import openai
+import openai
 
 class UserPrompt:
 
@@ -26,8 +26,7 @@ class UserPrompt:
         )
         return completion.choices[0].message.content
 
-
-api_key = "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"
+api_key = 
 prompt = "Recommend me a good playlist for studying."
 user_prompt = UserPrompt(prompt, api_key)
 category = user_prompt.identifyCategorie()
