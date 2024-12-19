@@ -1,36 +1,34 @@
 import openai
-import os
-from dotenv import load_dotenv
-load_dotenv()
 
 class UserPrompt:
-
     def __init__(self, prompt, api_key):
         self.userInput = prompt
-        self.categories = ['song recommendation', 'album recommendation', 'artist recommendation', 'playlist recommendation', 'spotify wrapped']
+        self.categories = [
+            'song recommendation', 
+            'album recommendation', 
+            'artist recommendation', 
+            'playlist recommendation', 
+            'spotify wrapped'
+        ]
         self.client = openai
         self.api_key = api_key
         openai.api_key = self.api_key  # Set the API key
 
     def compilePrompt(self):
-        temp = self.categories
-        res = ', '.join(self.categories)  # Use a clearer separator
-        gptPrompt = f"Which category in this list {res} does this prompt belong to: {self.userInput} NOTE: just output the category that this prompt belongs to, don't output anything else."
+        res = ', '.join(self.categories)
+        gptPrompt = (
+            f"Which category in this list {res} does this prompt belong to: {self.userInput} "
+            f"NOTE: just output the category that this prompt belongs to, don't output anything else."
+        )
         return gptPrompt
 
     def identifyCategorie(self):
         message = self.compilePrompt()
-        completion = self.client.chat.completions.create(
-            model="gpt-4o-mini",
+        completion = self.client.ChatCompletion.create(
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a Spotify assistant."},
                 {"role": "user", "content": message}
             ]
         )
-        return completion.choices[0].message.content
-
-api_key =  os.getenv('OPEN_AI_KEY')
-prompt = "Recommend me a good playlist for studying."
-user_prompt = UserPrompt(prompt, api_key)
-category = user_prompt.identifyCategorie()
-print("Category:", category)
+        return completion.choices[0].message.content.strip()

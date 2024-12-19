@@ -1,21 +1,19 @@
 import openai
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-import os
-from dotenv import load_dotenv
-load_dotenv()
 
 class Reccomendation:
     def __init__(self, openai_api_key, spotify_client_id, spotify_client_secret, spotify_redirect_uri):
         # Set up OpenAI API
         openai.api_key = openai_api_key
-        
+        print("DEBUG:", spotify_client_id, spotify_client_secret, spotify_redirect_uri)  # Debug print
+
         # Set up Spotify API
         self.spotipy_client = spotipy.Spotify(auth_manager=SpotifyOAuth(
             client_id=spotify_client_id,
             client_secret=spotify_client_secret,
             redirect_uri=spotify_redirect_uri,
-            scope="playlist-modify-private,playlist-modify-public"
+            scope="playlist-modify-private,playlist-modify-public,user-library-read"
         ))
 
     def get_song_recommendations(self, user_prompt):
@@ -27,7 +25,7 @@ class Reccomendation:
         )
 
         try:
-            response = openai.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=[
                     {"role": "system", "content": "You are a music recommendation assistant."},
@@ -35,7 +33,7 @@ class Reccomendation:
                 ]
             )
             song_list = response.choices[0].message['content'].strip().split("\n")
-            return song_list
+            return [song.strip() for song in song_list if song.strip()]
         except Exception as e:
             print("Error fetching recommendations from OpenAI:", e)
             return []
@@ -48,11 +46,10 @@ class Reccomendation:
         playlist = self.spotipy_client.user_playlist_create(
             user=user_id,
             name=playlist_name,
-            public=False  # Set to True if you want a public playlist
+            public=False
         )
-
         playlist_id = playlist['id']
-        
+
         # Search and add songs to the playlist
         track_uris = []
         for song in song_list:
@@ -67,24 +64,8 @@ class Reccomendation:
 
         if track_uris:
             self.spotipy_client.playlist_add_items(playlist_id, track_uris)
+            print(f"Playlist '{playlist_name}' created successfully!")
         else:
             print("No songs were added to the playlist.")
 
-        print(f"Playlist '{playlist_name}' created successfully!")
         return playlist_id
-
-# Example usage
-if __name__ == "__main__":
-    openai_api_key = "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"
-    spotify_client_id = "d668b508c7ed449ab5b9a6c58cd39914"
-    spotify_client_secret = "acc78b28681c418ab3036e6f42788a7b"
-    spotify_redirect_uri = "https://localhost.com/"
-
-    assistant = Reccomendation(openai_api_key, spotify_client_id, spotify_client_secret, spotify_redirect_uri)
-
-    user_prompt = "I want upbeat pop songs for a workout."
-    song_recommendations = assistant.get_song_recommendations(user_prompt)
-
-    if song_recommendations:
-        playlist_name = "Workout Pop Songs"
-        assistant.create_playlist_and_add_songs(playlist_name, song_recommendations)
