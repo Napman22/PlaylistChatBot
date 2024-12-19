@@ -1,4 +1,7 @@
 import openai
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 class UserPrompt:
 
@@ -26,7 +29,7 @@ class UserPrompt:
         )
         return completion.choices[0].message.content
 
-api_key = 
+api_key =  os.getenv('OPEN_AI_KEY')
 prompt = "Recommend me a good playlist for studying."
 user_prompt = UserPrompt(prompt, api_key)
 category = user_prompt.identifyCategorie()

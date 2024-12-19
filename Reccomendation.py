@@ -1,6 +1,9 @@
 import openai
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 class Reccomendation:
     def __init__(self, openai_api_key, spotify_client_id, spotify_client_secret, spotify_redirect_uri):
