@@ -31,3 +31,4 @@ class CreatePlaylist:
         else:
             print("No recommendations could be retrieved.")
             return False
+

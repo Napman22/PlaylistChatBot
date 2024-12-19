@@ -12,7 +12,7 @@ class UserPrompt:
         ]
         self.client = openai
         self.api_key = api_key
-        openai.api_key = self.api_key  # Set the API key
+          # Set the API key
 
     def compilePrompt(self):
         res = ', '.join(self.categories)

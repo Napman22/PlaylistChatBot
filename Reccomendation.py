@@ -1,6 +1,16 @@
 import openai
+import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+from dotenv import load_dotenv
+
+load_dotenv
+
+openaikey = os.getenv("OPEN_AI_KEY")
+client_id = os.getenv("CLIENT_ID")
+client_secret = os.getenv("ClIENT_SECRET")
+redirect_uri = os.getenv("SPOTIFY_REDIRECT_URI")
+
 
 class Reccomendation:
     def __init__(self, openai_api_key, spotify_client_id, spotify_client_secret, spotify_redirect_uri):
@@ -69,3 +79,4 @@ class Reccomendation:
             print("No songs were added to the playlist.")
 
         return playlist_id
+
